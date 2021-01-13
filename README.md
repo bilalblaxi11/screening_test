@@ -4,8 +4,10 @@
 #### How to setup
 1. Run "composer update" command
 2. Run "npm install" command
-3. Run "php artisan migrate" command
-4. Run "php artisan db:seed" command
-5. Run "php artisan serve" command
-6. Run "php artisan serve --port 8001" to create another thread for service.
+3. Setup MySQL DB credentials in .env File
+4. Run "php artisan migrate" command
+5. Run "php artisan db:seed" command
+6. Run "php artisan serve" command
+7. Run "php artisan serve --port 8001" to create another thread for service. 
+If you want it to run on different port then replace the "API_URL" value in .env file.
 
