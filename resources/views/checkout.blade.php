@@ -30,11 +30,9 @@
                     @foreach($products as $product)
                         <li class="list-group-item draggable" draggable="true">
                             <h4>{{ $product['detail']->description }} ({{ $product['detail']->uuid }})</h4>
-
-
                             <form method="post" action="{{ route('cart.remove', $product['detail']->id) }}">
                                 @csrf
-                                Quantity: {{ $product['qty'] }}
+                                Quantity: {{ $product['qty'] }} x Price: ${{ $product['detail']->price }} = ${{ $product['total'] }}
                                 <button type="submit" class="btn btn-danger btn-sm float-right mt-4">Remove Item</button>
                             </form>
                         </li>
@@ -42,6 +40,39 @@
                 </ul>
             </div>
             <div class="col-4">
+                @if(!empty($afterDiscount['switch_discount']))
+                    <div class="alert alert-success">
+                        @foreach($afterDiscount['switch_discount'] as $freeProduct)
+                            <p><b>{{ $freeProduct['qty'] }} "{{ $freeProduct['product-id'] }}" free </b> on every 5 switch products</p>
+                        @endforeach
+                    </div>
+                @endif
+                @if(!empty($afterDiscount['tool_discount']))
+                    <div class="alert alert-success">
+                        <p>20% Discount on one tool product if quantity is more then 1
+                            <b>Total Discount: ${{ $afterDiscount['tool_discount']['discount'] }}</b></p>
+                    </div>
+                @endif
+                @if(!empty($afterDiscount['flat_discount_on_total']))
+                    <div class="alert alert-success">
+                        <p>10% Flat Discount on $1000 purchase
+                            <b>Total Discount: ${{ $afterDiscount['flat_discount_on_total'] }}</b></p>
+                    </div>
+                @endif
+                <table class="table bg-dark text-white">
+                    <tr>
+                        <td>Subtotal</td>
+                        <th>${{ $total }}</th>
+                    </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <th>${{ (float)@$afterDiscount['total_discount'] }}</th>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <th>${{ (float)@$afterDiscount['total'] }}</th>
+                    </tr>
+                </table>
                 @if(count($products) > 0)
                     <a href="{{ route('checkout') }}" class="btn btn-dark btn-block text-white">Place Order</a>
                 @endif

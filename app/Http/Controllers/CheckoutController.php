@@ -13,13 +13,18 @@ class CheckoutController extends Controller
         $customer = $request->session()->get('user');
         $cartItems = $request->session()->has('cart') ? $request->session()->get('cart') : [];
 
-        $items = [];
+        $items = $products = [];
         $total = 0;
 
         foreach ($cartItems as $pid => $quantity){
             $product = Product::find($pid);
             if($product != false){
                 $productTotal = (float)$product->price * (float)$quantity;
+                $products[] = [
+                    'detail' => $product,
+                    'qty' => $quantity,
+                    'total' => $productTotal,
+                ];
                 $items[] = [
                     'product-id' => $product->uuid,
                     'quantity' => $quantity,
@@ -40,10 +45,10 @@ class CheckoutController extends Controller
         $url = env("API_PATH", "http://localhost:8001"). "/api/calculate_discount";
         //dd($url);
 
-        $response = Http::post($url, $request)->throw(function ($res, $e){
+        $afterDiscount = Http::post($url, $request)->throw(function ($res, $e){
             Log::error($e);
         })->json();
-        dd($response);
+
         return view('checkout',get_defined_vars());
     }
 }

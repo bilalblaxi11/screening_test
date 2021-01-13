@@ -13,10 +13,11 @@ class DiscountController extends Controller
     public function calculateDiscount(Request $request){
 
         $total = (float)@$request->total;
-        $totalDiscount = false;
+        $totalDiscount = $flatDiscountOnTotal = 0;
         if($total >= 1000) {
-            $totalDiscount = ($total * 0.1);
-            $total = $total - $totalDiscount;
+            $flatDiscountOnTotal = ($total * 0.1);
+            $totalDiscount += $flatDiscountOnTotal;
+            $total = $total - $flatDiscountOnTotal;
         }
         $items = $request->items;
 
@@ -55,6 +56,7 @@ class DiscountController extends Controller
 
         if($toolsQuantity >= 2){
             $discount = (float)$toolDiscountItem['price'] * 0.2;
+            $totalDiscount += $discount;
             $pid = $toolDiscountItem['product-id'];
             $toolDiscounts = ['product-id' => $pid, 'discount' => $discount];
             $total = $total - $discount;
@@ -63,8 +65,9 @@ class DiscountController extends Controller
         return response()->json([
             'switch_discount' => !empty($switchDiscounts) ? array_values($switchDiscounts) : [],
             'tool_discount' => $toolDiscounts,
-            'total_discount' => $totalDiscount,
-            'total' => $total
+            'total_discount' => number_format($totalDiscount,2,".",""),
+            'flat_discount_on_total' => number_format($flatDiscountOnTotal,2,".",""),
+            'total' => number_format($total,2,".","")
         ]);
     }
 
